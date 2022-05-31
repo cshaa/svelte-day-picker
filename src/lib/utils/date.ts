@@ -1,15 +1,14 @@
-
-  import { Temporal, toTemporalInstant } from '@js-temporal/polyfill';
-  import {
-    build,
-    firstAndRest,
-    groupByFirstElement,
-    join,
-    takeLast,
-    once,
-    unwrap,
-    wrap
-  } from './iterable';
+import { Temporal, toTemporalInstant } from '@js-temporal/polyfill';
+import {
+  build,
+  firstAndRest,
+  groupByFirstElement,
+  concat,
+  takeLast,
+  once,
+  unwrap,
+  wrap
+} from './iterable';
 
 export type Month = Temporal.PlainYearMonthLike | Date;
 
@@ -34,10 +33,10 @@ export const toPlainMonth = (
   tz: Temporal.TimeZoneLike,
   calendar: Temporal.CalendarLike
 ) =>
-  m instanceof Date
-    ? Temporal.PlainYearMonth.from(toPlainDate(m, tz, calendar))
-    : m instanceof Temporal.PlainYearMonth
+  m instanceof Temporal.PlainYearMonth
     ? m
+    : m instanceof Date
+    ? Temporal.PlainYearMonth.from(toPlainDate(m, tz, calendar))
     : Temporal.PlainYearMonth.from(m);
 
 export function* daysInMonth(m: Temporal.PlainYearMonth): Iterable<Temporal.PlainDate> {
@@ -91,7 +90,7 @@ export function* daysInCalendarPage(
 
   // display the remaining weeks up to minWeeks
   const futureWeeks = groupByFirstElement(
-    join(once(lastIteratedDay!), wrap(futureDays)),
+    concat(once(lastIteratedDay!), wrap(futureDays)),
     d => d.dayOfWeek === weekStart
   );
 
@@ -110,4 +109,8 @@ export function weeksInCalendarPage(
     daysInCalendarPage(m, weekStart, minWeeks),
     d => d.dayOfWeek === weekStart
   );
+}
+
+export function ordinalOfDayInWeek(day: Temporal.PlainDate, weekStart: DayOfWeek) {
+  return ((day.dayOfWeek - weekStart + 7) % 7) + 1;
 }
