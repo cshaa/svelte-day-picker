@@ -32,7 +32,7 @@
 
   /**
    * Either a Unicode Calendar Identifier of a calendar type, or a custom calendar according to the
-   * Temporal Calendar Protocol. Most of the world uses 'gregory' or 'iso8601' (which is almost the same),
+   * Temporal Calendar Protocol. Most of the world uses 'gregory' or 'iso8601' (which are almost the same),
    * but other calendar identifiers include 'buddhist', 'chinese', 'hebrew', 'islamic'.
    *
    * @see https://github.com/unicode-org/cldr/blob/main/common/bcp47/calendar.xml#L12
@@ -78,13 +78,13 @@
   export let month = defaultMonth;
   $: month_ = toPlainMonth(month ?? Temporal.Now.plainDate(calendar_), timeZone_, calendar_);
 
-  /** The number of consecutive months to show */
+  /** The number of consecutive months to show. */
   export let numberOfMonths = 1;
 
-  /** Forbid the user from navigating to a different month */
+  /** Forbid the user from navigating to a different month. */
   export let disableNavigation = false;
 
-  /** Typographic density of the UI */
+  /** Typographic density of the UI. */
   export let density: Density = Density.Default;
 
   const yieldDays = (m: Temporal.PlainYearMonth) => daysInCalendarPage(m, weekStart_);
