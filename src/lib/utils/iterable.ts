@@ -189,6 +189,83 @@ export function count<T>(iterable: Iterable<T>, failAt: number = Number.MAX_SAFE
   return l;
 }
 
+export interface EnumerateItem<I, T> {
+  value: T;
+  iterable: I;
+  index: number;
+  odd: boolean;
+  even: boolean;
+  first: boolean;
+}
+
+export interface EnumerateItemWithLast<I, T> extends EnumerateItem<I, T> {
+  last: boolean;
+}
+
+/**
+ * Enrich the iterable values by useful information like their index,
+ * whether they're odd or even and whether they're first or last in the iterable.
+ * Useful for writing one-liners.
+ */
+export function enumerate<
+  I extends Iterable<unknown> = Iterable<unknown>,
+  T extends IterableValue<I> = IterableValue<I>
+>(iterable: I, indicateLast?: false): G<EnumerateItem<I, T>>;
+
+export function enumerate<
+  I extends Iterable<unknown> = Iterable<unknown>,
+  T extends IterableValue<I> = IterableValue<I>
+>(iterable: I, indicateLast: true): G<EnumerateItemWithLast<I, T>>;
+
+export function enumerate<
+  I extends Iterable<unknown> = Iterable<unknown>,
+  T extends IterableValue<I> = IterableValue<I>
+>(
+  iterable: I,
+  indicateLast?: boolean
+): G<EnumerateItem<I, T> & Partial<EnumerateItemWithLast<I, T>>>;
+
+export function* enumerate<
+  I extends Iterable<unknown> = Iterable<unknown>,
+  T extends IterableValue<I> = IterableValue<I>
+>(
+  iterable: I,
+  indicateLast: boolean = false
+): G<EnumerateItem<I, T> & Partial<EnumerateItemWithLast<I, T>>> {
+  if (indicateLast) {
+    const iterator = unwrap(iterable as Iterable<T>);
+    let current = iterator.next();
+    let previous: IteratorResult<T>;
+
+    for (let index = 0; true; index++) {
+      [previous, current] = [current, iterator.next()];
+      if (previous.done) return;
+
+      yield {
+        value: previous.value,
+        iterable,
+        index,
+        first: index === 0,
+        even: index % 2 === 0,
+        odd: index % 2 === 1,
+        last: current.done
+      };
+    }
+  } else {
+    let index = 0;
+    for (const value of iterable as Iterable<T>) {
+      yield {
+        value,
+        iterable,
+        index,
+        first: index === 0,
+        even: index % 2 === 0,
+        odd: index % 2 === 1
+      };
+    }
+  }
+}
+
 // #endregion
 // #region [ rgba(0, 0, 255, 0.02) ] Extra Functions
 

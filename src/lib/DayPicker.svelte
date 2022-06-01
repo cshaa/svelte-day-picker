@@ -1,8 +1,10 @@
 <script lang="ts" context="module">
   import { Temporal, Intl as TIntl } from '@js-temporal/polyfill';
-  import { DayOfWeek, daysInCalendarPage, toPlainMonth } from '$lib/utils/date';
+  import { DayOfWeek, daysInCalendarPage, toPlainMonth, ordinalOfDayInWeek } from '$lib/utils/date';
   import type { Month } from '$lib/utils/date';
-  import { map, range } from './utils/iterable';
+  import { enumerate, map, range, takeFirst } from './utils/iterable';
+
+  import MonthTitle from './MonthTitle.svelte';
 
   export interface Locale extends Intl.Locale {
     weekInfo?: {
@@ -13,8 +15,8 @@
   }
 
   export enum Density {
-    Default,
-    Comfortable,
+    Sparse,
+    Medium,
     Dense
   }
 
@@ -22,7 +24,8 @@
 </script>
 
 <script lang="ts">
-  import { ordinalOfDayInWeek } from './utils/date';
+  import Day from './Day.svelte';
+  import DayHeading from './DayHeading.svelte';
 
   /** Locale – selects default calendar options and corresponding translation strings, if available */
   export let locale: Locale = new Intl.Locale(TIntl.DateTimeFormat().resolvedOptions().locale);
@@ -51,13 +54,10 @@
     minimalDays: 1
   };
 
-  $: formatter = TIntl.DateTimeFormat(locale.baseName, {
+  $: createFormatter = (options: TIntl.DateTimeFormatOptions) => TIntl.DateTimeFormat(locale.baseName, {
     calendar,
     timeZone,
-    month: 'long',
-    year: 'numeric',
-    weekday: 'short',
-    day: 'numeric'
+    ...options
   });
 
   /** First day of the week. */
@@ -71,51 +71,62 @@
   export let weekend: DayOfWeek[] | undefined = undefined;
   $: weekend_ = new Set(weekend ?? weekInfo.weekend);
 
+  /** The number of consecutive months to show. */
+  export let numberOfMonths = 1;
+
   /** When first loaded, the calendar will show this month. */
   export let defaultMonth: Month | undefined = undefined;
 
   /** A `bind:` propery controling the current month. */
   export let month = defaultMonth;
   $: month_ = toPlainMonth(month ?? Temporal.Now.plainDate(calendar_), timeZone_, calendar_);
-
-  /** The number of consecutive months to show. */
-  export let numberOfMonths = 1;
+  $: months = [...map(range(numberOfMonths), m => month_.add({ months: m }))];
 
   /** Forbid the user from navigating to a different month. */
   export let disableNavigation = false;
 
   /** Typographic density of the UI. */
-  export let density: Density = Density.Default;
+  export let density: Density = Density.Sparse;
 
-  const yieldDays = (m: Temporal.PlainYearMonth) => daysInCalendarPage(m, weekStart_);
-
-  $: months = [...map(range(numberOfMonths), m => month_.add({ months: m }))];
+  const navigateLeft = () => (month_ = month_.subtract({ months: 1 }));
+  const navigateRight = () => (month_ = month_.add({ months: 1 }));
 </script>
 
 <div
   class:day-picker={true}
-  class:day-picker-density-comfortable={density === Density.Comfortable}
+  class:day-picker-density-comfortable={density === Density.Medium}
   class:day-picker-density-dense={density === Density.Dense}
 >
-  {#each months as m}
+  {#each [...enumerate(months, true)] as { value: month, first, last, index }}
+    {@const monthTitleProps = {
+      month,
+      first,
+      last,
+      index,
+      createFormatter,
+      disableNavigation,
+      navigateLeft,
+      navigateRight
+    }}
+    {@const days = [...daysInCalendarPage(month, weekStart_)]}
+    {@const daysForHeading = [...takeFirst(days, 7)]}
+
     <div class:day-picker-month={true}>
-      <div class:day-picker-month-caption={true}>
-        <slot name="month-title" month={m} {formatter}>
-          {formatter.format(m)}
-        </slot>
+      <div class:day-picker-month-title={true}>
+        <slot name="month-title" {...monthTitleProps}><MonthTitle {...monthTitleProps} /></slot>
       </div>
-      {#each [...range(7)] as i}
-        <span class:day-picker-day={true} class:day-picker-day-heading={true} />
+      {#each daysForHeading as day}
+        {@const isWeekend = weekend_.has(day.dayOfWeek)}
+        {@const dayHeadingProps = { day, isWeekend, createFormatter }}
+
+        <slot name="day-heading" {...dayHeadingProps}><DayHeading {...dayHeadingProps} /></slot>
       {/each}
-      {#each [...yieldDays(m)] as d}
-        <span
-          class:day-picker-day={true}
-          class:day-picker-weekend={weekend_.has(d.dayOfWeek)}
-          class:day-picker-outside={!m.equals(d.toPlainYearMonth())}
-          data-day-ordinal={ordinalOfDayInWeek(d, weekStart_)}
-        >
-          <slot name="day" day={d}>{d.day}</slot>
-        </span>
+      {#each days as day}
+        {@const isWeekend = weekend_.has(day.dayOfWeek)}
+        {@const isOutside = !month.equals(day.toPlainYearMonth())}
+        {@const dayProps = { day, isWeekend, isOutside, disableNavigation, createFormatter }}
+
+        <slot name="day" {...dayProps}><Day {...dayProps} /></slot>
       {/each}
     </div>
   {/each}
@@ -143,22 +154,7 @@
     grid-template-columns: repeat(7, 1fr);
   }
 
-  .day-picker-month-caption {
+  .day-picker-month-title {
     grid-column: 1 / 8;
-    text-align: center;
-    font-weight: bold;
-  }
-
-  .day-picker-day {
-    text-align: center;
-    padding: calc(0.5 * var(--density-spacing-unit));
-  }
-
-  .day-picker-weekend {
-    color: red;
-  }
-
-  .day-picker-outside {
-    color: darkgray;
   }
 </style>
