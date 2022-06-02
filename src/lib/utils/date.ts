@@ -10,6 +10,10 @@ import {
   wrap
 } from './iterable';
 
+const { abs, round } = Math;
+
+export type Duration = Temporal.Duration;
+export type PlainDate = Temporal.PlainDate;
 export type Month = Temporal.PlainYearMonthLike | Date;
 
 export enum DayOfWeek {
@@ -22,11 +26,21 @@ export enum DayOfWeek {
   Sunday = 7
 }
 
+export interface PlainDateRange {
+  from: Temporal.PlainDate;
+  to: Temporal.PlainDate;
+}
+
 export const toPlainDate = (
   d: Date,
   timeZone: Temporal.TimeZoneLike,
   calendar: Temporal.CalendarLike
 ) => toTemporalInstant.call(d).toZonedDateTime({ timeZone, calendar }).toPlainDate();
+
+export const toLegacyDate = (
+  d: PlainDate,
+  timeZone: Temporal.TimeZoneLike
+) => new Date(d.toZonedDateTime({ timeZone }).epochMilliseconds);
 
 export const toPlainMonth = (
   m: Month,
@@ -114,3 +128,96 @@ export function weeksInCalendarPage(
 export function ordinalOfDayInWeek(day: Temporal.PlainDate, weekStart: DayOfWeek) {
   return ((day.dayOfWeek - weekStart + 7) % 7) + 1;
 }
+
+export const PlainDateRange = {
+  normalize({ from, to }: PlainDateRange) {
+    if (from.until(to).total('days') >= 0) return { from, to };
+    else return { from: to, to: from };
+  },
+  iterate: function* iterate({ from, to }: PlainDateRange) {
+    ({ from, to } = PlainDateRange.normalize({ from, to }));
+    for (let d = from; !d.equals(to); d.add({ days: 1 })) {
+      yield d;
+    }
+  },
+  toArray(range: PlainDateRange) {
+    return [...PlainDateRange.iterate(range)];
+  }
+};
+
+
+export const PlainDate = {
+    now: () => Temporal.Now.zonedDateTimeISO(),
+
+    lt: (a: PlainDate, b: PlainDate) => Temporal.PlainDate.compare(a, b) < 0,
+    lte: (a: PlainDate, b: PlainDate) => Temporal.PlainDate.compare(a, b) <= 0,
+    gte: (a: PlainDate, b: PlainDate) => Temporal.PlainDate.compare(a, b) >= 0,
+    gt: (a: PlainDate, b: PlainDate) => Temporal.PlainDate.compare(a, b) > 0,
+    eq: (a: PlainDate, b: PlainDate) => Temporal.PlainDate.compare(a, b) === 0,
+
+    max: (...args: PlainDate[]) => args.reduce((a, b) => PlainDate.gte(a, b) ? a : b),
+    min: (...args: PlainDate[]) => args.reduce((a, b) => PlainDate.lte(a, b) ? a : b),
+
+    isBetween: (date: PlainDate, start: PlainDate, end: PlainDate) =>
+        PlainDate.gte(date, start) && PlainDate.lte(date, end),
+
+    clamp: (date: PlainDate, start: PlainDate, end: PlainDate) =>
+        PlainDate.lt(date, start) ? start :
+            PlainDate.gt(date, end) ? end :
+                date,
+
+    startOfWeek: (date: PlainDate, sow: DayOfWeek) => date.subtract({ days: ordinalOfDayInWeek(date, sow) - 1 }),
+    endOfWeek: (date: PlainDate, sow: DayOfWeek) => PlainDate.startOfWeek(date, sow).add({ weeks: 1 }).subtract({ days: 1 }),
+
+    startOfMonth: (date: PlainDate) => date.with({ day: 1 }),
+    endOfMonth: (date: PlainDate) => PlainDate.startOfMonth(date).add({ months: 1 }).subtract({ days: 1 }),
+};
+
+export const Duration = {
+    lt: (a: Duration, b: Duration) => Temporal.Duration.compare(a, b) < 0,
+    lte: (a: Duration, b: Duration) => Temporal.Duration.compare(a, b) <= 0,
+    gte: (a: Duration, b: Duration) => Temporal.Duration.compare(a, b) >= 0,
+    gt: (a: Duration, b: Duration) => Temporal.Duration.compare(a, b) > 0,
+    eq: (a: Duration, b: Duration) => Temporal.Duration.compare(a, b) === 0,
+
+    max: (...args: Duration[]) => args.reduce((a, b) => Duration.gte(a, b) ? a : b),
+    min: (...args: Duration[]) => args.reduce((a, b) => Duration.lte(a, b) ? a : b),
+
+    isBetween: (duration: Duration, min: Duration, max: Duration) =>
+        Duration.gte(duration, min) && Duration.lte(duration, max),
+
+    clamp: (duration: Duration, min: Duration, max: Duration) =>
+        Duration.lt(duration, min) ? min :
+            Duration.gt(duration, max) ? max :
+                duration,
+
+    div,
+
+    scale: (s: number, d: Duration, unit: keyof Temporal.DurationLike = 'microseconds') =>
+        Temporal.Duration.from({ [unit]: round(s * d.total(unit)) }),
+};
+
+function div(a: Duration, b: Duration, unit?: Temporal.DurationTotalOf): number
+function div(a: Duration, b: number, unit?: keyof Temporal.DurationLike): Duration
+function div(a: Duration, b: Duration | number, unit: Temporal.DurationTotalOf = 'microseconds') {
+    if (typeof b === 'number') {
+        const u = unit as keyof Temporal.DurationLike;
+        return Temporal.Duration.from({ [u]: round(a.total(u) / b) });
+    } else {
+        return a.total(unit) / b.total(unit);
+    }
+}
+
+export const DateRange = {
+    areOverlaping: (a: PlainDateRange, b: PlainDateRange) => {
+        const from = PlainDate.max(a.from, b.from);
+        const to = PlainDate.min(a.to, b.to);
+        return PlainDate.lt(from, to);
+    },
+
+    eq: (a: PlainDateRange, b: PlainDateRange) =>
+        PlainDate.eq(a.from, b.from) && PlainDate.eq(a.to, b.to),
+};
+
+export type DateRangeLike = PlainDateRange | 'day' | 'week' | 'month';
+

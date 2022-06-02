@@ -1,0 +1,13 @@
+$fa-arrow-left: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20448%20512%22%20height%3D%2216%22%20width%3D%2216%22%3E%3Cpath%20fill%3D%22black%22%20stroke%3D%22white%22%20stroke-width%3D%224%22%20d%3D%22M257.5%20445.1l-22.2%2022.2c-9.4%209.4-24.6%209.4-33.9%200L7%20273c-9.4-9.4-9.4-24.6%200-33.9L201.4%2044.7c9.4-9.4%2024.6-9.4%2033.9%200l22.2%2022.2c9.5%209.5%209.3%2025-.4%2034.3L136.6%20216H424c13.3%200%2024%2010.7%2024%2024v32c0%2013.3-10.7%2024-24%2024H136.6l120.5%20114.8c9.8%209.3%2010%2024.8.4%2034.3z%22%2F%3E%3C%2Fsvg%3E%0A);
+$fa-arrow-right: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20448%20512%22%20height%3D%2216%22%20width%3D%2216%22%3E%3Cpath%20fill%3D%22black%22%20stroke%3D%22white%22%20stroke-width%3D%224%22%20d%3D%22M190.5%2066.9l22.2-22.2c9.4-9.4%2024.6-9.4%2033.9%200L441%20239c9.4%209.4%209.4%2024.6%200%2033.9L246.6%20467.3c-9.4%209.4-24.6%209.4-33.9%200l-22.2-22.2c-9.5-9.5-9.3-25%20.4-34.3L311.4%20296H24c-13.3%200-24-10.7-24-24v-32c0-13.3%2010.7-24%2024-24h287.4L190.9%20101.2c-9.8-9.3-10-24.8-.4-34.3z%22%2F%3E%3C%2Fsvg%3E%0A);
+
+
+@function horizontal-stripe($color, $from, $to) {
+    @return
+    linear-gradient(
+        to bottom,
+        transparent $from,
+        $color $from, $color $to,
+        transparent $to
+    );
+}
