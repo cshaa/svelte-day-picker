@@ -44,7 +44,7 @@
     flex-direction: row;
     align-items: center;
 
-    margin-bottom: calc(0.7 * var(--density-spacing-unit));
+    margin-bottom: calc(0.7 * var(--dp-density-spacing-unit));
   }
 
   .day-picker-month-navbutton {

@@ -131,12 +131,11 @@ export function ordinalOfDayInWeek(day: Temporal.PlainDate, weekStart: DayOfWeek
 
 export const PlainDateRange = {
   normalize({ from, to }: PlainDateRange) {
-    if (from.until(to).total('days') >= 0) return { from, to };
+    if (PlainDate.lte(from, to)) return { from, to };
     else return { from: to, to: from };
   },
   iterate: function* iterate({ from, to }: PlainDateRange) {
-    ({ from, to } = PlainDateRange.normalize({ from, to }));
-    for (let d = from; !d.equals(to); d.add({ days: 1 })) {
+    for (let d = from; PlainDate.lte(d, to); d = d.add({ days: 1 })) {
       yield d;
     }
   },

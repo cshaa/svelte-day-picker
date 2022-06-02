@@ -230,67 +230,67 @@
     }
   };
 
-  const onDayMouseEnter = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent): void => {
-    if (mode !== Mode.Range) {
-      preview = [];
-      return;
-    }
-
-    let prev: PlainDateRange | undefined, sel: PlainDateRange | undefined;
-    const { from, to } = selectedRange ?? {};
-
-    switch (rangeClickState) {
-      case ClickState.FirstDaySelected:
-        prev = getRangePreview(day);
-        break;
-    }
-
-    switch (rangeDragging) {
-      case Dragging.From:
-        sel = { from: day, to: assertSome(to) };
-        break;
-
-      case Dragging.To:
-        sel = { from: assertSome(from), to: day };
-        break;
-
-      case Dragging.Range: {
-        const { from, to } = assertSome(preDragSelected);
-        const days = round(assertSome(dragReference).until(day).total('days'));
-        sel = { from: from.add({ days }), to: to.add({ days }) };
-        break;
+  const onDayMouseEnter =
+    (day: PlainDate, mods: DayModifiers) =>
+    (e: MouseEvent): void => {
+      if (mode !== Mode.Range) {
+        preview = [];
+        return;
       }
 
-      case Dragging.MightDrag: {
-        const ref = assertSome(dragReference);
-        const { from, to } = assertSome(preDragSelected);
+      let prev: PlainDateRange | undefined, sel: PlainDateRange | undefined;
+      const { from, to } = selectedRange ?? {};
 
-        if (!day.equals(ref)) {
-          if (ref.equals(from)) rangeDragging = Dragging.From;
-          else if (ref.equals(to)) rangeDragging = Dragging.To;
-          else if (PlainDate.isBetween(ref, from, to)) rangeDragging = Dragging.Range;
-          else rangeDragging = Dragging.None;
+      switch (rangeClickState) {
+        case ClickState.FirstDaySelected:
+          prev = getRangePreview(day);
+          break;
+      }
 
-          return onDayMouseEnter(day, mods)(e);
+      switch (rangeDragging) {
+        case Dragging.From:
+          sel = { from: day, to: assertSome(to) };
+          break;
+
+        case Dragging.To:
+          sel = { from: assertSome(from), to: day };
+          break;
+
+        case Dragging.Range: {
+          const { from, to } = assertSome(preDragSelected);
+          const days = round(assertSome(dragReference).until(day).total('days'));
+          sel = { from: from.add({ days }), to: to.add({ days }) };
+          break;
         }
 
-        break;
+        case Dragging.MightDrag: {
+          const ref = assertSome(dragReference);
+          const { from, to } = assertSome(preDragSelected);
+
+          if (!day.equals(ref)) {
+            if (ref.equals(from)) rangeDragging = Dragging.From;
+            else if (ref.equals(to)) rangeDragging = Dragging.To;
+            else if (PlainDate.isBetween(ref, from, to)) rangeDragging = Dragging.Range;
+            else rangeDragging = Dragging.None;
+
+            return onDayMouseEnter(day, mods)(e);
+          }
+
+          break;
+        }
       }
-    }
 
-    if (sel && PlainDate.gt(sel.from, sel.to)) {
-      [sel.from, sel.to] = [sel.to, sel.from];
-      if (rangeDragging === Dragging.From) rangeDragging = Dragging.To;
-      else if (rangeDragging === Dragging.To) rangeDragging = Dragging.From;
-    }
+      if (sel && PlainDate.gt(sel.from, sel.to)) {
+        [sel.from, sel.to] = [sel.to, sel.from];
+        if (rangeDragging === Dragging.From) rangeDragging = Dragging.To;
+        else if (rangeDragging === Dragging.To) rangeDragging = Dragging.From;
+      }
 
-    if (sel) {
+      if (sel) {
+        selectedRange = sel;
+      }
       previewRange = prev;
-      selectedRange = sel;
-    } else {
-      previewRange = prev;
-    }
-  };
+    };
 
   const onDayMouseDown = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {};
   const onDayMouseUp = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {};
@@ -387,6 +387,9 @@
     --dp-preview-bg-color: #bebebe;
     --dp-selected-fg-color: white;
     --dp-preview-fg-color: black;
+
+    --dp-weekend-color: #a00;
+    --dp-outside-color: darkgray;
   }
 
   .day-picker-density-sparse {

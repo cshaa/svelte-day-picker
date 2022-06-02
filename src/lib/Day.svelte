@@ -49,14 +49,15 @@
     border-radius: 100%;
     cursor: pointer;
     user-select: none;
+    position: relative;
   }
 
   .day-picker-weekend {
-    color: red;
+    color: var(--dp-weekend-color);
   }
 
   .day-picker-outside {
-    color: darkgray;
+    color: var(--dp-outside-color);
   }
 
   .day-picker-selected {
@@ -86,7 +87,7 @@
       cursor: grab;
       border-radius: 0;
       background-color: unset;
-      background-image: horizontal-stripe(var(--dp-preview-bg-color), 10%, 80%);
+      background-image: horizontal-stripe(var(--dp-preview-bg-color), 20%, 80%);
     }
 
     .day-picker-preview-start:not(.day-picker-selected):not(.day-picker-preview-end)::after,
@@ -99,7 +100,7 @@
       height: 100%;
       width: 0.3em;
       background-color: unset;
-      background-image: horizontal-stripe(var(--dp-preview-bg-color), 10%, 80%);
+      background-image: horizontal-stripe(var(--dp-preview-bg-color), 20%, 80%);
     }
 
     .day-picker-preview-end:not(.day-picker-selected):not(.day-picker-preview-start)::before,
@@ -112,7 +113,7 @@
       height: 100%;
       width: 0.3em;
       background-color: unset;
-      background-image: horizontal-stripe(var(--dp-preview-bg-color), 10%, 80%);
+      background-image: horizontal-stripe(var(--dp-preview-bg-color), 20%, 80%);
     }
 
     .day-picker-selected:not(.day-picker-outside):not(.day-picker-disabled) {
@@ -125,7 +126,7 @@
       &.day-picker-selected-end.day-picker-preview-start::after,
       &.day-picker-selected-start.day-picker-preview-end::before {
         background-color: unset;
-        background-image: horizontal-stripe(var(--dp-selected-bg-color), 10%, 80%);
+        background-image: horizontal-stripe(var(--dp-selected-bg-color), 20%, 80%);
       }
     }
   }
