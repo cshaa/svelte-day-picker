@@ -48,7 +48,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@iter-tools/queue": "^1.5.2",
     "@js-temporal/polyfill": "^0.4.1"
   },
   "types": "./DayPicker.svelte.d.ts",
