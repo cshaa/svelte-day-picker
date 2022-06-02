@@ -1,6 +1,21 @@
 {
   "name": "svelte-day-picker",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "author": {
+    "name": "Michal Grňo (m93a)",
+    "url": "https://github.com/m93a/"
+  },
+  "description": "A solid calendar component for Svelte",
+  "homepage": "https://github.com/m93a/svelte-day-picker",
+  "bugs": {
+    "url": "https://github.com/m93a/svelte-day-picker/issues"
+  },
+  "license": "MIT",
+  "paths": {
+    "*": [
+      "src/types/*.d.ts"
+    ]
+  },
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
@@ -35,5 +50,9 @@
   "dependencies": {
     "@iter-tools/queue": "^1.5.2",
     "@js-temporal/polyfill": "^0.4.1"
+  },
+  "types": "./DayPicker.svelte.d.ts",
+  "exports": {
+    ".": "./DayPicker.svelte"
   }
 }
