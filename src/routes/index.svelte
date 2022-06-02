@@ -1,6 +1,5 @@
 <script lang="ts">
   import DayPicker, { Density, Mode } from '$lib/DayPicker.svelte';
-  import { Intl } from '@js-temporal/polyfill';
 </script>
 
 <h1>Welcome to SvelteKit</h1>

@@ -71,9 +71,10 @@
   import MonthTitle from './MonthTitle.svelte';
 
   /** Locale – selects default calendar options and corresponding translation strings, if available */
-  export let locale: Locale = new Intl.Locale(TIntl.DateTimeFormat().resolvedOptions().locale);
+  export let locale: Locale | string = new Intl.Locale(TIntl.DateTimeFormat().resolvedOptions().locale);
+  $: locale_ = typeof locale === "string" ? new Intl.Locale(locale) as Locale : locale;
   $: resolvedOptions = TIntl.DateTimeFormat(
-    locale.baseName
+    locale_.baseName
   ).resolvedOptions() as Partial<Intl.ResolvedDateTimeFormatOptions>;
 
   /**
@@ -91,14 +92,14 @@
   export let timeZone: string | undefined = undefined;
   $: timeZone_ = resolvedOptions.timeZone ?? 'utc';
 
-  $: weekInfo = locale.weekInfo ?? {
+  $: weekInfo = locale_.weekInfo ?? {
     firstDay: DayOfWeek.Monday,
     weekend: [DayOfWeek.Saturday, DayOfWeek.Sunday],
     minimalDays: 1
   };
 
   $: createFormatter = (options: TIntl.DateTimeFormatOptions) =>
-    TIntl.DateTimeFormat(locale.baseName, {
+    TIntl.DateTimeFormat(locale_.baseName, {
       calendar,
       timeZone,
       ...options
@@ -292,8 +293,38 @@
       previewRange = prev;
     };
 
-  const onDayMouseDown = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {};
-  const onDayMouseUp = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {};
+  const onDayMouseDown = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {
+    const { from, to } = selectedRange ?? {};
+    if (e.button !== 0 || mode !== Mode.Range || !from || !to) return;
+
+    if (PlainDate.isBetween(day, from, to)) {
+      dragReference = day;
+      preDragSelected = selectedRange;
+      rangeDragging = Dragging.MightDrag;
+    }
+  };
+
+  const onDayMouseUp = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {
+    const { from, to } = selectedRange ?? {};
+    if (e.button !== 0 || mode !== Mode.Range || !from || !to) return;
+
+    if (PlainDate.isBetween(day, from, to)) {
+      dragReference = undefined;
+      preDragSelected = undefined;
+
+      switch (rangeDragging) {
+        case Dragging.None:
+        case Dragging.PostDrag:
+        case Dragging.MightDrag:
+          rangeDragging = Dragging.None;
+          break;
+
+        default:
+          rangeDragging = Dragging.PostDrag;
+          break;
+      }
+    }
+  };
 </script>
 
 <div
