@@ -1,25 +1,29 @@
 <!-- <svelte:options strictprops={false} /> -->
 <script lang="ts">
   import type { Temporal } from '@js-temporal/polyfill';
+import { noop, ignoreUnusedProp } from './utils/misc';
 
   export let day: Temporal.PlainDate;
-  export let isWeekend: boolean;
-  export let isOutside: boolean;
-  export let isDisabled: boolean;
-  export let isSelected: boolean;
-  export let isSelectedStart: boolean;
-  export let isSelectedEnd: boolean;
-  export let isPreview: boolean;
-  export let isPreviewStart: boolean;
-  export let isPreviewEnd: boolean;
+  export let isWeekend: boolean = false;
+  export let isOutside: boolean = false;
+  export let isDisabled: boolean = false;
+  export let isSelected: boolean = false;
+  export let isSelectedStart: boolean = false;
+  export let isSelectedEnd: boolean = false;
+  export let isPreview: boolean = false;
+  export let isPreviewStart: boolean = false;
+  export let isPreviewEnd: boolean = false;
 
-  export let onClick: (e: MouseEvent) => void = () => void 0;
-  export let onMouseDown: (e: MouseEvent) => void = () => void 0;
-  export let onMouseUp: (e: MouseEvent) => void = () => void 0;
-  export let onMouseEnter: (e: MouseEvent) => void = () => void 0;
+  export let onClick: (e: MouseEvent) => void = noop;
+  export let onMouseDown: (e: MouseEvent) => void = noop;
+  export let onMouseUp: (e: MouseEvent) => void = noop;
+  export let onMouseEnter: (e: MouseEvent) => void = noop;
 
   export let disableNavigation: boolean = false;
+  ignoreUnusedProp(disableNavigation);
+
   export let createFormatter: any = null;
+  ignoreUnusedProp(createFormatter);
 </script>
 
 <span

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Temporal, Intl } from '@js-temporal/polyfill';
   import NavIcon, { Direction } from './NavIcon.svelte';
+  import { ignoreUnusedProp } from './utils/misc';
 
   export let month: Temporal.PlainYearMonth;
   export let first: boolean;
@@ -11,6 +12,7 @@
   export let navigateRight: () => void;
 
   export let index: number = 0;
+  ignoreUnusedProp(index);
 
   $: formatter = createFormatter({
     month: 'long',
@@ -57,7 +59,7 @@
 
   .day-picker-month-navbutton,
   .day-picker-month-space {
-    width: 16px;
+    width: var(--dp-navicon-size, 1em);
   }
 
   .day-picker-month-caption {
