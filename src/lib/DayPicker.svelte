@@ -105,12 +105,13 @@
       ...options
     });
 
-  /** First day of the week. */
+  /** Which day (Monday, Tuesday, ...) is considered the first day of the week. */
   export let weekStart: DayOfWeek | undefined = undefined;
   $: weekStart_ = weekStart ?? weekInfo.firstDay;
 
   /**
-   * Days that are considered a weekend. They needen't be two or contiguous.
+   * Days that are considered a weekend. They needen't be two, nor contiguous.
+   * @see https://en.wikipedia.org/wiki/Workweek_and_weekend#Friday_weekend_(One_day_weekend)
    * @see https://en.wikipedia.org/wiki/Workweek_and_weekend#Non-contiguous_working_week
    */
   export let weekend: DayOfWeek[] | undefined = undefined;
