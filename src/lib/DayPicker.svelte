@@ -58,8 +58,7 @@
     MightDrag,
     From,
     To,
-    Range,
-    PostDrag
+    Range
   }
 
   export { DayOfWeek, Month };
@@ -71,8 +70,10 @@
   import MonthTitle from './MonthTitle.svelte';
 
   /** Locale – selects default calendar options and corresponding translation strings, if available */
-  export let locale: Locale | string = new Intl.Locale(TIntl.DateTimeFormat().resolvedOptions().locale);
-  $: locale_ = typeof locale === "string" ? new Intl.Locale(locale) as Locale : locale;
+  export let locale: Locale | string = new Intl.Locale(
+    TIntl.DateTimeFormat().resolvedOptions().locale
+  );
+  $: locale_ = typeof locale === 'string' ? (new Intl.Locale(locale) as Locale) : locale;
   $: resolvedOptions = TIntl.DateTimeFormat(
     locale_.baseName
   ).resolvedOptions() as Partial<Intl.ResolvedDateTimeFormatOptions>;
@@ -153,8 +154,15 @@
   $: {
     if (mode === Mode.Range) {
       preview = previewRange ? PlainDateRange.toArray(previewRange) : [];
+    }
+  }
+  $: {
+    if (mode === Mode.Range) {
       selected = selectedRange ? PlainDateRange.toArray(selectedRange) : [];
-    } else {
+    }
+  }
+  $: {
+    if (mode !== Mode.Range) {
       preview = [];
       previewRange = undefined;
       selectedRange = undefined;
@@ -235,6 +243,8 @@
   const onDayMouseEnter =
     (day: PlainDate, mods: DayModifiers) =>
     (e: MouseEvent): void => {
+      if (rangeDragging && !e.buttons) rangeDragging = Dragging.None;
+
       if (mode !== Mode.Range) {
         preview = [];
         return;
@@ -312,18 +322,7 @@
     if (PlainDate.isBetween(day, from, to)) {
       dragReference = undefined;
       preDragSelected = undefined;
-
-      switch (rangeDragging) {
-        case Dragging.None:
-        case Dragging.PostDrag:
-        case Dragging.MightDrag:
-          rangeDragging = Dragging.None;
-          break;
-
-        default:
-          rangeDragging = Dragging.PostDrag;
-          break;
-      }
+      rangeDragging = Dragging.None;
     }
   };
 </script>
