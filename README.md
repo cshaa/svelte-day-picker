@@ -23,22 +23,22 @@ npm install svelte-day-picker
 [**Try it!**](https://svelte.dev/repl/0f027084f8c2485483a3e5ccb6287acf?version=3.48.0)
 
 # API
-## &lt;DayPicker />
+## `<DayPicker />`
 ### DayPicker Props
   * <a id=daypicker.locale href=#daypicker.locale>`locale`</a>
-    * Type: `string \| Intl.Locale`
+    * Type: `string | Intl.Locale`
     * Default: The user's current locale
     * Description: Selects default calendar options and corresponding translation strings, if available
 
   * <a id=daypicker.calendar href=#daypicker.calendar> `calendar`</a>
-    * Type: `string \| Temporal.CalendarProtocol`
+    * Type: `string | Temporal.CalendarProtocol`
     * Default: Current locale's calendar — typically `'gregory'`
     * Description: Either a [Unicode Calendar Identifier](https://github.com/unicode-org/cldr/blob/main/common/bcp47/calendar.xml#L12) of a calendar type, or a custom calendar according to the [Temporal Calendar Protocol](https://tc39.es/proposal-temporal/docs/calendar.html#custom-calendars). Most of the world uses `'gregory'` or `'iso8601'` (which are almost the same), but other calendar identifiers include `'buddhist'`, `'chinese'`, `'hebrew'`, `'islamic'`.
 
   * <a id=daypicker.timezone href=#daypicker.timezone>`timeZone`</a>
     * Type: `string`
-    * Default: Current locale's timezone
-    * Description: Timezone to resolve today's date.
+    * Default: Current locale's time zone
+    * Description: Time zone to resolve today's date.
 
   * <a id=daypicker.weekstart href=#daypicker.weekstart>`weekStart`</a>
     * Type: (enum) `DayOfWeek`
@@ -101,3 +101,11 @@ npm install svelte-day-picker
   * <a id="daypicker>day" href="#daypicker>day">`day`</a>
     * The individual days in the month.
     * Default implementation `<Day />`
+
+
+# Roadmap
+ * [ ] Improve documentation
+ * [ ] Implement SSR
+ * [ ] Feature-parity with React Day Picker
+ * [ ] Improve UX on touch devices
+ * [ ] Keyboard navigation & ARIA
