@@ -14,13 +14,19 @@
   export let index: number = 0;
   ignoreUnusedProp(index);
 
+  function preventDoubleClickSelection(e: MouseEvent) {
+    if (e.detail > 1) {
+      e.preventDefault();
+    }
+  }
+
   $: formatter = createFormatter({
     month: 'long',
     year: 'numeric'
   });
 </script>
 
-<div>
+<div on:mousedown={preventDoubleClickSelection}>
   {#if first && !disableNavigation}
     <span class:day-picker-month-navbutton={true} on:click={navigateLeft}>
       <NavIcon direction={Direction.Left} />
