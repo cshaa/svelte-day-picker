@@ -89,6 +89,21 @@ npm install svelte-day-picker
     * Default: `undefined`
     * Description: A `bind:` property containing the selected range, if the mode is `Mode.Range`.
 
+  * <a id=daypicker.disabled href=#daypicker.disabled>`disabled`</a>
+    * Type: `Matcher[] | Matcher`
+    * Default: `[]`
+    * Description: Which days should be marked as disabled.
+
+  * <a id=daypicker.hidden href=#daypicker.hidden>`hidden`</a>
+    * Type: `Matcher[] | Matcher`
+    * Default: `[]`
+    * Description: Which days should be hidden.
+
+  * <a id=daypicker.today href=#daypicker.today>`today`</a>
+    * Type: `Date | Temporal.PlainDate`
+    * Default: `new Date()` (the current date)
+    * Description: The day that should be highlighted as the current date.
+
 ### DayPicker Slots
   * <a id="daypicker>month-title" href="#daypicker>month-title">`month-title`</a>
     * The element that renders above each month. By default it's the month's name (for example _“January 2022”_) and navigation buttons forward & backward.
