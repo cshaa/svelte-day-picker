@@ -6,13 +6,15 @@
     toPlainMonth,
     PlainDate,
     PlainDateRange,
-    Duration
+    Duration,
+    toPlainDate
   } from '$lib/utils/date';
   import type { Month } from '$lib/utils/date';
   import { assertSome } from '$lib/utils/misc';
   import { enumerate, map, range, takeFirst } from './utils/iterable';
 
   const { round } = Math;
+  const toArray = <T>(value: T | T[]) => (Array.isArray(value) ? value : [value]);
 
   export interface Locale extends Intl.Locale {
     weekInfo?: {
@@ -39,12 +41,14 @@
     isOutside: boolean;
     isWeekend: boolean;
     isDisabled: boolean;
+    isHidden: boolean;
     isSelected: boolean;
     isSelectedStart: boolean;
     isSelectedEnd: boolean;
     isPreview: boolean;
     isPreviewStart: boolean;
     isPreviewEnd: boolean;
+    isToday: boolean;
   }
 
   enum ClickState {
@@ -68,6 +72,7 @@
   import Day from './Day.svelte';
   import DayHeading from './DayHeading.svelte';
   import MonthTitle from './MonthTitle.svelte';
+  import { dayMatches, type Matcher } from './utils/matcher';
 
   /** Locale – selects default calendar options and corresponding translation strings, if available */
   export let locale: Locale | string = new Intl.Locale(
@@ -128,6 +133,20 @@
   export let month = defaultMonth;
   $: month_ = toPlainMonth(month ?? Temporal.Now.plainDate(calendar_), timeZone_, calendar_);
   $: months = [...map(range(numberOfMonths), m => month_.add({ months: m }))];
+
+  export let today: Temporal.Instant | Temporal.PlainDateLike | Date = PlainDate.now();
+  $: today_ =
+    today instanceof Date
+      ? toPlainDate(today, timeZone_, calendar_)
+      : today instanceof Temporal.Instant
+      ? today.toZonedDateTime({ timeZone: timeZone_, calendar: calendar_ }).toPlainDate()
+      : PlainDate.from(today);
+
+  export let disabled: Matcher | Matcher[] = [];
+  $: disabled_ = toArray<Matcher>(disabled);
+
+  export let hidden: Matcher | Matcher[] = [];
+  $: hidden_ = toArray<Matcher>(hidden);
 
   /** Forbid the user from navigating to a different month. */
   export let disableNavigation = false;
@@ -193,6 +212,7 @@
     }
   };
 
+  // TODO paged navigation, see #2
   const navigateLeft = () => (month_ = month_.subtract({ months: 1 }));
   const navigateRight = () => (month_ = month_.add({ months: 1 }));
 
@@ -364,23 +384,28 @@
       {#each days as day}
         {@const isWeekend = weekend_.has(day.dayOfWeek)}
         {@const isOutside = !month.equals(day.toPlainYearMonth())}
-        {@const isDisabled = false}
+        {@const isDisabled = dayMatches(day, disabled_, timeZone_, calendar_)}
+        <!-- TODO showOutsideDays, see #3 -->
+        {@const isHidden = dayMatches(day, hidden_, timeZone_, calendar_)}
         {@const isSelected = !!selected.find(d => d.equals(day))}
-        {@const isSelectedStart = selected[0]?.equals(day) ?? false}
-        {@const isSelectedEnd = selected[selected.length - 1]?.equals(day) ?? false}
+        {@const isSelectedStart = selected.at(0)?.equals(day) ?? false}
+        {@const isSelectedEnd = selected.at(-1)?.equals(day) ?? false}
         {@const isPreview = !!preview.find(d => d.equals(day))}
-        {@const isPreviewStart = preview[0]?.equals(day) ?? false}
-        {@const isPreviewEnd = preview[preview.length - 1]?.equals(day) ?? false}
+        {@const isPreviewStart = preview.at(0)?.equals(day) ?? false}
+        {@const isPreviewEnd = preview.at(-1)?.equals(day) ?? false}
+        {@const isToday = PlainDate.eq(today_, day)}
         {@const modifiers = {
           isWeekend,
           isOutside,
           isDisabled,
+          isHidden,
           isSelected,
           isSelectedStart,
           isSelectedEnd,
           isPreview,
           isPreviewStart,
-          isPreviewEnd
+          isPreviewEnd,
+          isToday
         }}
         {@const onMouseEnter = onDayMouseEnter(day, modifiers)}
         {@const onMouseDown = onDayMouseDown(day, modifiers)}
@@ -420,7 +445,8 @@
     --dp-preview-fg-color: black;
 
     --dp-weekend-color: #a00;
-    --dp-outside-color: darkgray;
+    --dp-outside-color: #707070;
+    --dp-disabled-color: darkgray;
   }
 
   .day-picker-density-sparse {

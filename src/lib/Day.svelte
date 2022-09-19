@@ -1,18 +1,20 @@
 <!-- <svelte:options strictprops={false} /> -->
 <script lang="ts">
   import type { Temporal } from '@js-temporal/polyfill';
-import { noop, ignoreUnusedProp } from './utils/misc';
+  import { noop, ignoreUnusedProp } from './utils/misc';
 
   export let day: Temporal.PlainDate;
   export let isWeekend: boolean = false;
   export let isOutside: boolean = false;
   export let isDisabled: boolean = false;
+  export let isHidden: boolean = false;
   export let isSelected: boolean = false;
   export let isSelectedStart: boolean = false;
   export let isSelectedEnd: boolean = false;
   export let isPreview: boolean = false;
   export let isPreviewStart: boolean = false;
   export let isPreviewEnd: boolean = false;
+  export let isToday: boolean = false;
 
   export let onClick: (e: MouseEvent) => void = noop;
   export let onMouseDown: (e: MouseEvent) => void = noop;
@@ -31,12 +33,14 @@ import { noop, ignoreUnusedProp } from './utils/misc';
   class:day-picker-weekend={isWeekend}
   class:day-picker-outside={isOutside}
   class:day-picker-disabled={isDisabled}
+  class:day-picker-hidden={isHidden}
   class:day-picker-selected={isSelected}
   class:day-picker-selected-start={isSelectedStart}
   class:day-picker-selected-end={isSelectedEnd}
   class:day-picker-preview={isPreview}
   class:day-picker-preview-start={isPreviewStart}
   class:day-picker-preview-end={isPreviewEnd}
+  class:day-picker-today={isToday}
   on:click={onClick}
   on:mousedown={onMouseDown}
   on:mouseup={onMouseUp}
@@ -62,6 +66,20 @@ import { noop, ignoreUnusedProp } from './utils/misc';
 
   .day-picker-outside {
     color: var(--dp-outside-color);
+  }
+
+  .day-picker-disabled {
+    color: var(--dp-disabled-color);
+    cursor: default;
+  }
+
+  .day-picker-hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .day-picker-today {
+    font-weight: bold;
   }
 
   .day-picker-selected {
