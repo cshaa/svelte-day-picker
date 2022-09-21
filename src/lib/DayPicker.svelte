@@ -53,8 +53,7 @@
 
   enum ClickState {
     Empty = 0,
-    FirstDaySelected,
-    RangeSelected
+    FirstDaySelected
   }
 
   enum Dragging {
@@ -203,12 +202,6 @@
       case ClickState.FirstDaySelected:
         if (PlainDate.lt(day, from!)) return { from: day, to: to! };
         else return { from: from!, to: day };
-
-      case ClickState.RangeSelected:
-        if (PlainDate.lt(day, from!)) return { from: day, to: to! };
-        else if (PlainDate.gt(day, to!)) return { from: from!, to: day };
-        else if (Duration.lt(from!.until(day), day.until(to!))) return { from: day, to: to! };
-        else return { from: from!, to: day };
     }
   };
 
@@ -249,10 +242,7 @@
             break;
 
           case ClickState.FirstDaySelected:
-            rangeClickState = ClickState.RangeSelected;
-            break;
-
-          case ClickState.RangeSelected:
+            rangeClickState = ClickState.Empty;
             break;
         }
         selectedRange = prev;
