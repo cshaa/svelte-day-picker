@@ -28,6 +28,7 @@
   ignoreUnusedProp(createFormatter);
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <span
   class:day-picker-day={true}
   class:day-picker-weekend={isWeekend}

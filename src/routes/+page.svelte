@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DayPicker, { Density, Mode } from '$lib/DayPicker.svelte';
+  import DayPicker, { Mode } from '$lib/DayPicker.svelte';
   import type { PlainDate } from '$lib/utils/date';
   let selected: PlainDate[];
   $: console.log(selected);
