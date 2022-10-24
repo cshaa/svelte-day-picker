@@ -28,6 +28,7 @@
 
 <div on:mousedown={preventDoubleClickSelection}>
   {#if first && !disableNavigation}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <span class:day-picker-month-navbutton={true} on:click={navigateLeft}>
       <NavIcon direction={Direction.Left} />
     </span>
@@ -38,6 +39,7 @@
     {formatter.format(month)}
   </span>
   {#if last && !disableNavigation}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <span class:day-picker-month-navbutton={true} on:click={navigateRight}>
       <NavIcon direction={Direction.Right} />
     </span>
