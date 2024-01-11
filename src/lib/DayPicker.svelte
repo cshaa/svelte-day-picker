@@ -6,7 +6,6 @@
     toPlainMonth,
     PlainDate,
     PlainDateRange,
-    Duration,
     toPlainDate
   } from '$lib/utils/date';
   import type { Month } from '$lib/utils/date';
@@ -14,7 +13,7 @@
   import { enumerate, map, range, takeFirst } from './utils/iterable';
 
   const { round } = Math;
-  const toArray = <T>(value: T | T[]) => (Array.isArray(value) ? value : [value]);
+  const toArray = <T,>(value: T | T[]) => (Array.isArray(value) ? value : [value]);
 
   export interface Locale extends Intl.Locale {
     weekInfo?: {
@@ -64,7 +63,7 @@
     Range
   }
 
-  export { DayOfWeek, Month };
+  export { DayOfWeek, type Month };
 </script>
 
 <script lang="ts">
@@ -138,8 +137,8 @@
     today instanceof Date
       ? toPlainDate(today, timeZone_, calendar_)
       : today instanceof Temporal.Instant
-      ? today.toZonedDateTime({ timeZone: timeZone_, calendar: calendar_ }).toPlainDate()
-      : PlainDate.from(today);
+        ? today.toZonedDateTime({ timeZone: timeZone_, calendar: calendar_ }).toPlainDate()
+        : PlainDate.from(today);
 
   export let disabled: Matcher | Matcher[] = [];
   $: disabled_ = toArray<Matcher>(disabled);
@@ -209,7 +208,7 @@
   const navigateLeft = () => (month_ = month_.subtract({ months: 1 }));
   const navigateRight = () => (month_ = month_.add({ months: 1 }));
 
-  const onDayClick = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {
+  const onDayClick = (day: PlainDate, mods: DayModifiers) => (_e: MouseEvent) => {
     switch (mode) {
       case Mode.None:
         return;
@@ -219,10 +218,12 @@
         return;
 
       case Mode.Multiple:
-        const i = selected.findIndex(d => d.equals(day));
-        if (i === -1) selected.push(day), selected.sort(Temporal.PlainDate.compare);
-        else selected.splice(i, 1);
-        selected = selected;
+        {
+          const i = selected.findIndex(d => d.equals(day));
+          if (i === -1) selected.push(day), selected.sort(Temporal.PlainDate.compare);
+          else selected.splice(i, 1);
+          selected = selected;
+        }
         return;
 
       case Mode.Range: {
@@ -314,7 +315,7 @@
       previewRange = prev;
     };
 
-  const onDayMouseDown = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {
+  const onDayMouseDown = (day: PlainDate, _mods: DayModifiers) => (e: MouseEvent) => {
     const { from, to } = selectedRange ?? {};
     if (e.button !== 0 || mode !== Mode.Range || !from || !to) return;
 
@@ -325,7 +326,7 @@
     }
   };
 
-  const onDayMouseUp = (day: PlainDate, mods: DayModifiers) => (e: MouseEvent) => {
+  const onDayMouseUp = (day: PlainDate, _mods: DayModifiers) => (e: MouseEvent) => {
     const { from, to } = selectedRange ?? {};
     if (e.button !== 0 || mode !== Mode.Range || !from || !to) return;
 
@@ -425,9 +426,23 @@
     margin: var(--dp-density-spacing-unit);
     column-gap: calc(1.2 * var(--dp-density-spacing-unit));
 
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans',
-      sans-serif, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji',
-      'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-family:
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      Ubuntu,
+      Cantarell,
+      'Noto Sans',
+      sans-serif,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Helvetica,
+      Arial,
+      sans-serif,
+      'Apple Color Emoji',
+      'Segoe UI Emoji',
+      'Segoe UI Symbol';
 
     --dp-selected-bg-color: #4a90e2;
     --dp-preview-bg-color: #bebebe;
