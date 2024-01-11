@@ -10,7 +10,7 @@ import {
   wrap
 } from './iterable';
 
-const { abs, round } = Math;
+const { round } = Math;
 
 export type Duration = Temporal.Duration;
 export type PlainDate = Temporal.PlainDate;

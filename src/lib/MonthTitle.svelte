@@ -7,7 +7,7 @@
   export let first: boolean;
   export let last: boolean;
   export let disableNavigation: boolean;
-  export let createFormatter: (options: Intl.DateTimeFormatOptions) => Intl.DateTimeFormat;
+  export let createFormatter: (_options: Intl.DateTimeFormatOptions) => Intl.DateTimeFormat;
   export let navigateLeft: () => void;
   export let navigateRight: () => void;
 
@@ -26,10 +26,15 @@
   });
 </script>
 
-<div on:mousedown={preventDoubleClickSelection}>
+<div on:mousedown={preventDoubleClickSelection} role="row" tabindex="-1">
   {#if first && !disableNavigation}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <span class:day-picker-month-navbutton={true} on:click={navigateLeft}>
+    <span
+      class:day-picker-month-navbutton={true}
+      on:click={navigateLeft}
+      role="button"
+      tabindex="0"
+    >
       <NavIcon direction={Direction.Left} />
     </span>
   {:else}
@@ -40,7 +45,12 @@
   </span>
   {#if last && !disableNavigation}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <span class:day-picker-month-navbutton={true} on:click={navigateRight}>
+    <span
+      class:day-picker-month-navbutton={true}
+      on:click={navigateRight}
+      role="button"
+      tabindex="0"
+    >
       <NavIcon direction={Direction.Right} />
     </span>
   {:else}

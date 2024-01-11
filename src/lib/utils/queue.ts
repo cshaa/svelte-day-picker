@@ -16,6 +16,7 @@ const _ = Symbol.for('_');
 const flag = Symbol.for('@iter-tools/queue');
 
 export default class Queue<T> {
+  // @ts-expect-error there IS initialization in the constructor behind clear() function call
   [_]: { size: number, cleared: boolean, head: QueueItem<T>, tail: QueueItem<T> }
 
   constructor(values?: Iterable<T>) {
@@ -29,8 +30,8 @@ export default class Queue<T> {
     }
   }
 
-  static isQueue(inst: any): inst is Queue<any> {
-    return inst != null && inst[flag];
+  static isQueue(inst: unknown): inst is Queue<unknown> {
+    return inst != null && Boolean((inst as { [key: symbol]: unknown })[flag]);
   }
 
   get [flag]() {
@@ -103,7 +104,7 @@ export default class Queue<T> {
     }
   }
 
-  forEach(cb: (value: T, index: number, queue: Queue<T>) => any, thisArg: any) {
+  forEach(cb: (value: T, index: number, queue: Queue<T>) => unknown, thisArg: unknown) {
     if (thisArg != null) {
       cb = cb.bind(thisArg);
     }

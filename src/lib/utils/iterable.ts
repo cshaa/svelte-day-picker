@@ -181,7 +181,8 @@ export function reduce<
  */
 export function count<T>(iterable: Iterable<T>, failAt: number = Number.MAX_SAFE_INTEGER): number {
   let l = 0;
-  for (const _ in iterable) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  for (const _key in iterable) {
     l++;
     if (l >= failAt)
       throw new RangeError('The iterable was longer than the specified limit (possibly infinite).');
@@ -262,6 +263,8 @@ export function* enumerate<
         even: index % 2 === 0,
         odd: index % 2 === 1
       };
+
+      index += 1;
     }
   }
 }

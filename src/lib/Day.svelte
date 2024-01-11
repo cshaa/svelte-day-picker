@@ -24,7 +24,7 @@
   export let disableNavigation: boolean = false;
   ignoreUnusedProp(disableNavigation);
 
-  export let createFormatter: any = null;
+  export let createFormatter: unknown = null;
   ignoreUnusedProp(createFormatter);
 </script>
 
@@ -46,6 +46,8 @@
   on:mousedown={onMouseDown}
   on:mouseup={onMouseUp}
   on:mouseenter={onMouseEnter}
+  role="button"
+  tabindex="0"
 >
   <slot {day}>{day.day}</slot>
 </span>
@@ -101,7 +103,9 @@
 
     .day-picker-preview,
     .day-picker-selected.day-picker-outside,
-    .day-picker-preview.day-picker-day:not(.day-picker-disabled):not(.day-picker-selected):not(.day-picker-outside):hover {
+    .day-picker-preview.day-picker-day:not(.day-picker-disabled):not(.day-picker-selected):not(
+        .day-picker-outside
+      ):hover {
       background-color: var(--dp-preview-bg-color);
     }
 
