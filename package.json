@@ -44,6 +44,9 @@
   "dependencies": {
     "@js-temporal/polyfill": "^0.4.4"
   },
+  "peerDependencies": {
+    "svelte": "^4.0.0"
+  },
   "exports": {
     ".": {
       "types": "./dist/DayPicker.svelte.d.ts",
