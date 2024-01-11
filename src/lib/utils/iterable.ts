@@ -1,4 +1,4 @@
-import Queue from './queue';
+import Queue from './queue.js';
 const { floor } = Math;
 
 // #region [ rgba(255, 0, 100, 0.08) ] Type Utilities

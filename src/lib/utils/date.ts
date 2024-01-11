@@ -8,7 +8,7 @@ import {
   once,
   unwrap,
   wrap
-} from './iterable';
+} from './iterable.js';
 
 const { round } = Math;
 

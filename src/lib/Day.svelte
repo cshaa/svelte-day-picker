@@ -1,7 +1,7 @@
 <!-- <svelte:options strictprops={false} /> -->
 <script lang="ts">
   import type { Temporal } from '@js-temporal/polyfill';
-  import { noop, ignoreUnusedProp } from './utils/misc';
+  import { noop, ignoreUnusedProp } from './utils/misc.js';
 
   export let day: Temporal.PlainDate;
   export let isWeekend: boolean = false;

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Temporal, Intl } from '@js-temporal/polyfill';
   import NavIcon, { Direction } from './NavIcon.svelte';
-  import { ignoreUnusedProp } from './utils/misc';
+  import { ignoreUnusedProp } from './utils/misc.js';
 
   export let month: Temporal.PlainYearMonth;
   export let first: boolean;
