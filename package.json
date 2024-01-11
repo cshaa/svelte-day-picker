@@ -11,6 +11,9 @@
     "url": "https://github.com/m93a/svelte-day-picker/issues"
   },
   "license": "MIT",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "dev": "vite dev",
     "package": "svelte-package",
