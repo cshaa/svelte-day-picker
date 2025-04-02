@@ -8,7 +8,7 @@ import {
   once,
   unwrap,
   wrap
-} from './iterable.js';
+} from './iterable.ts';
 
 const { round } = Math;
 
@@ -48,8 +48,8 @@ export const toPlainMonth = (
   m instanceof Temporal.PlainYearMonth
     ? m
     : m instanceof Date
-    ? Temporal.PlainYearMonth.from(toPlainDate(m, tz, calendar))
-    : Temporal.PlainYearMonth.from(m);
+      ? Temporal.PlainYearMonth.from(toPlainDate(m, tz, calendar))
+      : Temporal.PlainYearMonth.from(m);
 
 export function* daysInMonth(m: Temporal.PlainYearMonth): Iterable<Temporal.PlainDate> {
   for (let day = 1; day <= m.daysInMonth; day++) {

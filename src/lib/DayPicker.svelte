@@ -10,7 +10,7 @@
   } from '$lib/utils/date';
   import type { Month } from '$lib/utils/date';
   import { assertSome } from '$lib/utils/misc';
-  import { enumerate, map, range, takeFirst } from './utils/iterable.js';
+  import { enumerate, map, range, takeFirst } from './utils/iterable.ts';
 
   const { round } = Math;
   const toArray = <T,>(value: T | T[]) => (Array.isArray(value) ? value : [value]);
@@ -70,7 +70,7 @@
   import Day from './Day.svelte';
   import DayHeading from './DayHeading.svelte';
   import MonthTitle from './MonthTitle.svelte';
-  import { dayMatches, type Matcher } from './utils/matcher.js';
+  import { dayMatches, type Matcher } from './utils/matcher.ts';
 
   /** Locale – selects default calendar options and corresponding translation strings, if available */
   export let locale: Locale | string = new Intl.Locale(

@@ -1,0 +1,15 @@
+.svelte-kit/
+node_modules/
+src/
+!dist/
+.vscode/
+.github/
+.gitignore
+*.log
+*.lock
+vite.config.js
+tsconfig.json
+tsconfig.node.json
+.eslintrc.cjs
+.prettierrc
+.prettierignore
