@@ -22,6 +22,7 @@ const config: UserConfig = {
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
+        exports: 'named',
         globals: {
           svelte: 'Svelte'
         }

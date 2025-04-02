@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Temporal, Intl } from '@js-temporal/polyfill';
   import NavIcon, { Direction } from './NavIcon.svelte';
-  import { ignoreUnusedProp } from './utils/misc.ts';
+  import { ignoreUnusedProp } from './utils/misc';
 
   export let month: Temporal.PlainYearMonth;
   export let first: boolean;
@@ -38,7 +38,7 @@
       <NavIcon direction={Direction.Left} />
     </span>
   {:else}
-    <span class:day-picker-month-space={true} />
+    <span class:day-picker-month-space={true}></span>
   {/if}
   <span class:day-picker-month-caption={true}>
     {formatter.format(month)}
@@ -54,7 +54,7 @@
       <NavIcon direction={Direction.Right} />
     </span>
   {:else}
-    <span class:day-picker-month-space={true} />
+    <span class:day-picker-month-space={true}></span>
   {/if}
 </div>
 

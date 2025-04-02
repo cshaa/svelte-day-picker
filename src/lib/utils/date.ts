@@ -8,7 +8,7 @@ import {
   once,
   unwrap,
   wrap
-} from './iterable.ts';
+} from './iterable';
 
 const { round } = Math;
 

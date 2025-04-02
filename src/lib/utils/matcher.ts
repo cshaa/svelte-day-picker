@@ -1,5 +1,5 @@
 import type { Temporal } from '@js-temporal/polyfill';
-import { PlainDate, toPlainDate, type DayOfWeek } from './date.ts';
+import { PlainDate, toPlainDate, type DayOfWeek } from './date';
 
 type D = PlainDate | Date;
 
