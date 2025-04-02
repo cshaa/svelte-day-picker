@@ -1,5 +1,5 @@
-import DayPicker, { Mode, Density, DayOfWeek } from './DayPicker.svelte';
+import DayPicker, { Mode, Density, DayOfWeek, SelectionState } from './DayPicker.svelte';
 
 export default DayPicker;
-export { Mode, Density, DayOfWeek };
+export { Mode, Density, DayOfWeek, SelectionState };
 export * from './utils/date';

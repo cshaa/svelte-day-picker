@@ -29,6 +29,16 @@
     Dense
   }
 
+  export enum SelectionState {
+    RangeFirstClick,
+    Complete
+  }
+
+  enum ClickState {
+    Empty = 0,
+    FirstDaySelected
+  }
+
   export enum Mode {
     None,
     Single,
@@ -48,11 +58,6 @@
     isPreviewStart: boolean;
     isPreviewEnd: boolean;
     isToday: boolean;
-  }
-
-  enum ClickState {
-    Empty = 0,
-    FirstDaySelected
   }
 
   enum Dragging {
@@ -155,11 +160,18 @@
   /** Selection mode – whether to select a single day, multiple days or a range. */
   export let mode: Mode = Mode.Single;
 
-  /** A `bind:` property containing all the selected dates. */
+  /** A property containing all the selected dates. */
   export let selected: PlainDate[] = [];
 
-  /** A `bind:` property containing the selected range – if the mode is Mode.Range */
+  /** A property containing the selected range – if the mode is Mode.Range */
   export let selectedRange: PlainDateRange | undefined = undefined;
+
+  export let onSelect: (
+    mode: Mode,
+    selectionState: SelectionState,
+    range: PlainDateRange | undefined,
+    selected: Temporal.PlainDate[]
+  ) => void | undefined;
 
   let preview: PlainDate[] = [];
   let previewRange: PlainDateRange | undefined = undefined;
@@ -215,6 +227,7 @@
 
       case Mode.Single:
         selected = [day];
+        onSelect(mode, SelectionState.Complete, undefined, selected);
         return;
 
       case Mode.Multiple:
@@ -224,6 +237,7 @@
           else selected.splice(i, 1);
           selected = selected;
         }
+        onSelect(mode, SelectionState.Complete, undefined, selected);
         return;
 
       case Mode.Range: {
@@ -247,6 +261,14 @@
             break;
         }
         selectedRange = prev;
+        onSelect(
+          mode,
+          rangeClickState === ClickState.Empty
+            ? SelectionState.Complete
+            : SelectionState.RangeFirstClick,
+          selectedRange,
+          []
+        );
       }
     }
   };
@@ -283,6 +305,7 @@
           const { from, to } = assertSome(preDragSelected);
           const days = round(assertSome(dragReference).until(day).total('days'));
           sel = { from: from.add({ days }), to: to.add({ days }) };
+
           break;
         }
 
@@ -329,6 +352,8 @@
   const onDayMouseUp = (day: PlainDate, _mods: DayModifiers) => (e: MouseEvent) => {
     const { from, to } = selectedRange ?? {};
     if (e.button !== 0 || mode !== Mode.Range || !from || !to) return;
+
+    if (rangeDragging !== Dragging.None) onSelect(mode, SelectionState.Complete, selectedRange, []);
 
     if (PlainDate.isBetween(day, from, to)) {
       dragReference = undefined;
@@ -381,6 +406,7 @@
         {@const isSelected = !!selected.find(d => d.equals(day))}
         {@const isSelectedStart = selected.at(0)?.equals(day) ?? false}
         {@const isSelectedEnd = selected.at(-1)?.equals(day) ?? false}
+
         {@const isPreview = !!preview.find(d => d.equals(day))}
         {@const isPreviewStart = preview.at(0)?.equals(day) ?? false}
         {@const isPreviewEnd = preview.at(-1)?.equals(day) ?? false}
